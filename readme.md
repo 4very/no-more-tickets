@@ -32,6 +32,7 @@
         - mongodb
         - couchdb/pouchdb
 - OpenStreetMap
+    - https://github.com/paulmach/osm
 
 #### Ingress
 - 
