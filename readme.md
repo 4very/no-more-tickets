@@ -32,6 +32,7 @@
         - couchdb/pouchdb
 - OpenStreetMap
     - https://github.com/paulmach/osm
+- SwaggerUI for api documentation
 
 #### Ingress
 - 
