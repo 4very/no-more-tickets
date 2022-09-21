@@ -1,0 +1,8 @@
+version: '3'
+
+services:
+  backend:
+    container_name: fastapi
+    build:
+      dockerfile: ./docker/dev/dockerfile.backend
+      context: ../../backend
