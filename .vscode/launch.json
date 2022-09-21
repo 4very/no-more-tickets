@@ -15,7 +15,15 @@
       "jinja": true,
       "justMyCode": true,
       "cwd":"${workspaceFolder}/backend",
-      "console": "internalConsole"
+      "console": "internalConsole",
+      "envFile": "${workspaceFolder}/backend/.env"
+    },
+    {
+      "name": "Firebase Emulator",
+      "type": "node-terminal",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/backend/firebase",
+      "command": "npx firebase emulators:start",
     }
   ]
 }
