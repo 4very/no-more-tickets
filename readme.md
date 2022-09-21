@@ -23,11 +23,10 @@
     - interactive maps
 
 #### Backend
-- Go
-- [Fiber](https://gofiber.io/)
-    - can also do gin
+- Python
+- [FastAPI](https://fastapi.tiangolo.com/)
 - Firestore
-    - free document database
+    - free document database and authentication
     - self-hosted alternatives
         - mongodb
         - couchdb/pouchdb
