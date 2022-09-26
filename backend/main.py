@@ -21,7 +21,6 @@ app = FastAPI(openapi_tags=tags_metadata, responses=responses)
 
 origins = [
     "http://localhost",
-    "http://localhost:8082",
 ]
 
 app.add_middleware(
