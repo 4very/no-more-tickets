@@ -1,9 +1,8 @@
+
 import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import auth, firestore
 from os import environ
-
-
 
 
 
@@ -25,3 +24,5 @@ firebase_admin.initialize_app(cred, config)
 
 auth = auth
 firestore = firestore
+
+
