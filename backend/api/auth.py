@@ -1,64 +1,171 @@
-from pydantic import BaseModel, EmailStr
-from fastapi import APIRouter, HTTPException
+from http.client import HTTPException
+from typing import Any
+from pydantic import BaseModel, EmailStr, SecretStr
+from fastapi import APIRouter, Header
 from fastapi.responses import JSONResponse
-router = APIRouter()
+
 from firebase.pyrebase import auth as pauth
 from requests import HTTPError
 from firebase.admin import auth as aauth
+from firebase_admin.auth import InvalidIdTokenError, ExpiredIdTokenError, RevokedIdTokenError, UserDisabledError, CertificateFetchError
+
+
 from json import loads
+
 from pprint import pprint
 
+router = APIRouter()
 
 
-
-class loginBody(BaseModel):
+# LOGIN DATA
+class authLoginBody(BaseModel):
     email: EmailStr
-    password: str
+    password: SecretStr
 
-class loginResponse(BaseModel):
+class authLoginResponse(BaseModel):
     localId: str
-    email: str
+    email: EmailStr
     idToken: str
     refreshToken: str
     expiresIn: int
 
 # POST login 
-@router.post('/login', response_model=loginResponse)
-async def login(login: loginBody):
+@router.post('/login', response_model=authLoginResponse)
+async def login(login: authLoginBody) -> authLoginResponse | HTTPError:
     try:
         # use pyrebase to validate the credentials submitted
-        user = pauth.sign_in_with_email_and_password(login.email, login.password)
+        user = pauth.sign_in_with_email_and_password(login.email, login.password.get_secret_value())
         return user
 
-    except HTTPError as e:
+    except HTTPError as error:
         # get the error message from HTTPError
-        error = loads(e.args[1])['error']['message']
+        error_code: str = loads(error.args[1])['error']['message']
 
         # email not found
-        if (error == 'EMAIL_NOT_FOUND'):
+        if (error_code == 'EMAIL_NOT_FOUND'):
             return JSONResponse(status_code=400,content={
                 "msg": "No account found with this email!",
-                "type": error
+                "type": error_code
             })
 
         # invalid password
-        if (error == 'INVALID_PASSWORD'):
+        if (error_code == 'INVALID_PASSWORD'):
             return JSONResponse(status_code=400, content={
                 "msg": "Password is invalid!",
-                "type": error
+                "type": error_code
+            })
+        
+        if (error_code == 'USER_DISABLED'):
+            return JSONResponse(status_code=400, content={
+                "msg": "User's account is disabled!",
+                "type": error_code
             })
         
         # else
         return JSONResponse(status_code=400, content={
             "msg": "Unknown error occured!",
-            "type": "UNKNOWN_ERROR"
+            "type": error_code
+        })
+
+# USER DATA
+# TODO may move this to not auth
+# TODO change this to get and figure out where nuxt auth puts the token
+
+# GET user data
+@router.get('/user')
+async def user(token: str):
+    # verify token with firebase
+    try: 
+        response = aauth.verify_id_token(token, check_revoked=True)
+        # TODO: get user information
+        return response
+
+    # if token isnt a string or a blank string
+    # firebase_admin already does this error checking so we can just leverage that
+    except ValueError:
+        return JSONResponse(status_code=400,content={
+                "msg": "Invalid token",
+                "type": "INVALID_TOKEN"
+            })
+
+    # token is expired and needs to be refreshed
+    except ExpiredIdTokenError:
+        return JSONResponse(status_code=400,content={
+                "msg": "Expired token",
+                "type": "EXPIRED_TOKEN"
+            })
+
+    # token has been revoked
+    except RevokedIdTokenError:
+        return JSONResponse(status_code=400,content={
+                "msg": "Revoked token",
+                "type": "REVOKED_TOKEN"
+            })
+
+    # else for revoked and expired, includes malformed or other bad statuses
+    except InvalidIdTokenError:
+        return JSONResponse(status_code=400,content={
+                "msg": "Malformed token",
+                "type": "BAD_TOKEN"
+            })
+
+    except CertificateFetchError:
+        return JSONResponse(status_code=400,content={
+                "msg": "Failed to fetch public key certificate required to verify token",
+                "type": "CANT_FETCH_CERT"
+            })
+
+    # user's account has been disabled
+    except UserDisabledError:
+        return JSONResponse(status_code=400,content={
+                "msg": "User disabled",
+                "type": "USER_DISABLED"
+            })
+
+
+
+
+# REFRESH DATA
+class authRefreshBody(BaseModel):
+    refreshToken: str
+    userId: str
+
+class authRefreshResponse(BaseModel):
+    userId: str
+    idToken: str
+    refreshToken: str
+
+# POST new token
+@router.post('/refresh', response_model=authRefreshResponse)
+async def refresh(body: authRefreshBody) -> authLoginResponse | HTTPError:
+    try: 
+        refresh_response: dict[str, Any] = pauth.refresh(body.refreshToken)
+
+        # extra verification check
+        if refresh_response['userId'] != body.userId: 
+            return JSONResponse(status_code=400,content={
+                "msg": "Response UserId doesn't specified UserId",
+                "type": "USERID_MISMATCH"
+            })
+        return refresh_response
+
+    except HTTPError as error:
+        error_code: str = loads(error.args[1])['error']['message']
+
+        # refresh token isnt valid
+        if (error_code == 'INVALID_REFRESH_TOKEN'):
+            return JSONResponse(status_code=400,content={
+                "msg": "Refresh token is invalid!",
+                "type": error_code
+            })
+
+        # else
+        return JSONResponse(status_code=400, content={
+            "msg": "Unknown error occured!",
+            "type": error_code
         })
 
 
-# POST new token
-@router.post('/refresh')
-async def refresh():
-    return {"message": "Hello World"}
 
 # POST logout
 @router.post('/logout')
