@@ -2,6 +2,7 @@
 import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import auth, firestore
+from firebase_admin.credentials import Certificate
 from os import environ
 
 
@@ -18,7 +19,7 @@ config = {
 
 }
 
-cred = credentials.Certificate('private-key.json')
+cred: Certificate = credentials.Certificate('private-key.json')
 
 firebase_admin.initialize_app(cred, config)
 
