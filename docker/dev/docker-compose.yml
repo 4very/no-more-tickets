@@ -1,8 +1,19 @@
 version: '3'
 
 services:
-  backend:
-    container_name: fastapi
+  # backend:
+  #   container_name: fastapi
+  #   build:
+  #     dockerfile: ../docker/dev/dockerfile.backend
+  #     context: ../../backend
+
+  frontend:
+    container_name: nuxt3
     build:
-      dockerfile: ./docker/dev/dockerfile.backend
-      context: ../../backend
+      dockerfile: ../docker/dev/dockerfile.frontend
+      context: ../../frontend
+    volumes:
+      - ./frontend-start.sh:/usr/src/nuxt-app/frontend-start.sh:ro
+    ports:
+      - 3000:3000
+      - 3001:3001
