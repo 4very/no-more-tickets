@@ -1,6 +1,5 @@
 from fastapi import FastAPI
 
-from api import auth
 from docs.tags import tags_metadata
 
 from fastapi.middleware.cors import CORSMiddleware
@@ -38,4 +37,6 @@ app.add_middleware(
 async def root():
     return {"message": "Hello World"}
 
-app.include_router(auth.router, prefix='/auth', tags=['auth'])
+
+from api.auth import router as auth_router
+app.include_router(auth_router, prefix='/auth', tags=['auth'])
