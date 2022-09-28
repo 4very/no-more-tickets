@@ -9,6 +9,7 @@ firebase-admin = "*"
 pyrebase4 = "*"
 black = "*"
 pylint = "*"
+osmpythontools = "*"
 
 [dev-packages]
 
