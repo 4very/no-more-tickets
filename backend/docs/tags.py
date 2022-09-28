@@ -1,4 +1,3 @@
-
 tags_metadata = [
     {
         "name": "auth",

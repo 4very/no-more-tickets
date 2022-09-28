@@ -5,16 +5,13 @@ from docs.tags import tags_metadata
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
+
 class HTTPError(BaseModel):
     msg: str
     type: str
 
 
-
-
-responses = {
-    400: {'model': HTTPError}
-}
+responses = {400: {"model": HTTPError}}
 
 app = FastAPI(openapi_tags=tags_metadata, responses=responses)
 
@@ -31,12 +28,11 @@ app.add_middleware(
 )
 
 
-
-
 @app.get("/")
 async def root():
     return {"message": "Hello World"}
 
 
 from api.auth import router as auth_router
-app.include_router(auth_router, prefix='/auth', tags=['auth'])
+
+app.include_router(auth_router, prefix="/auth", tags=["auth"])
