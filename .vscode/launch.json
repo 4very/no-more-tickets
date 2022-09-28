@@ -24,6 +24,16 @@
       "request": "launch",
       "cwd": "${workspaceFolder}/backend/firebase",
       "command": "npx firebase emulators:start",
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Nuxt: Node",
+      "outputCapture": "std",
+      "cwd": "${workspaceFolder}/frontend",
+      "program": "./node_modules/nuxt/bin/nuxt.mjs",
+      "args": ["dev", "--port", "3000"]
     }
+
   ]
 }
