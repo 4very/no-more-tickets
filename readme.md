@@ -30,6 +30,7 @@
     - self-hosted alternatives
         - mongodb
         - couchdb/pouchdb
+- [Pyrebase4](https://github.com/nhorvath/Pyrebase4)
 - OpenStreetMap
     - https://github.com/paulmach/osm
 - SwaggerUI for api documentation
