@@ -8,6 +8,7 @@ fastapi = {extras = ["all"], version = "*"}
 firebase-admin = "*"
 pyrebase4 = "*"
 black = "*"
+pylint = "*"
 
 [dev-packages]
 
