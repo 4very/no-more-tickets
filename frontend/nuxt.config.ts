@@ -29,5 +29,11 @@ export default defineNuxtConfig({
       },
       exclude: ['node_modules', '.nuxt', 'dist']
     }
+  },
+
+  tailwindcss: {
+    cssPath: '~/assets/css/main.css',
+    configPath: 'tailwind.config.js',
+    viewer: true
   }
 });
