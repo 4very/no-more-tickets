@@ -1,24 +1,38 @@
 from OSMPythonTools.api import Api
-from OSMPythonTools.overpass import overpassQueryBuilder, Overpass
+from OSMPythonTools.overpass import Overpass
 import logging
 
-api = Api()
 overpass = Overpass()
-logging.getLogger("OSMPythonTools").setLevel(logging.ERROR)
-
-# print(.tag('border_type'))
-# print(api.query('way/669246263').nodes())
+# logging.getLogger("OSMPythonTools").setLevel(logging.ERROR)
 
 
-road = "Congress Street"
-bounds = ["4th Street", "5th Street"]
+road = "Division Street"
+bounds = ["4th Street", "1st Street"]
 
+query = f'''
+way[highway][name="{road}"];node(w)->.n1;
+way[highway][name="{bounds[0]}"];node(w)->.n2;
+way[highway][name="{bounds[1]}"];node(w)->.n3;
+(node.n1.n2; node.n1.n3;);
+out body;'''
 
-query = overpassQueryBuilder(
-    area="relation/174387", elementType="way", selector=f'"name"~"{road}"'
-)
-result = overpass.query(query)
-for way in result.ways():
-    for node in way.nodes(shallow=False):
-        api.query(f"node/{node.id()}")
-        print(node.id(), node.members())
+bbox = {'bbox': "42.6940400, -73.7064390, 42.7952720, -73.6491630"}
+
+from pprint import pprint
+coords = overpass.query(query, settings=bbox).elements()
+
+lats = []
+lons = []
+for elt in coords:
+    lats.append(elt.lat())
+    lons.append(elt.lon())
+    
+bbox2 = {"bbox": f"{min(lats)}, {min(lons)}, {max(lats)}, {max(lons)}"}
+
+query2 = f'''
+way[highway][name="{road}"];node(w)->.n1;
+node.n1;
+out body;
+'''
+
+pprint(overpass.query(query2, settings=bbox2).toJSON())
