@@ -1,5 +1,6 @@
 export default defineNuxtConfig({
   srcDir: 'src',
+  css: ['leaflet/dist/leaflet.css'],
 
   modules: [
     '@nuxtjs/color-mode',
