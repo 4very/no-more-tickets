@@ -6,8 +6,11 @@ overpass = Overpass()
 # logging.getLogger("OSMPythonTools").setLevel(logging.ERROR)
 
 
-road = "Division Street"
-bounds = ["4th Street", "1st Street"]
+# road = "Hill Street"
+# bounds = ["Liberty Street", "Ida Street"]
+road = "Congress Street"
+bounds = ["Brunswick Avenue", "11th Street"]
+
 
 query = f"""
 way[highway][name="{road}"];node(w)->.n1;
@@ -24,6 +27,7 @@ coords = overpass.query(query, settings=bbox).elements()
 
 lats = []
 lons = []
+
 for elt in coords:
     lats.append(elt.lat())
     lons.append(elt.lon())
@@ -36,4 +40,41 @@ node.n1;
 out body;
 """
 
-pprint(overpass.query(query2, settings=bbox2).toJSON())
+# query2 = f"""
+# way[highway][name="{road}"];node(w);
+# (._;>;);
+# out body;
+# """
+
+result = overpass.query(query2, settings=bbox2)
+nodes = {}
+pprint(result.toJSON())
+for elt in result.elements():
+    nodes[elt.id()] = [elt.lat(), elt.lon()]
+pprint(nodes)
+
+
+def distance(lat, lon, lat2, lon2):
+    return pow(pow(abs(lat) - abs(lat2), 2) + pow(abs(lon) - abs(lon2), 2), 0.5)
+
+
+nodes_backup = nodes.copy()
+cur = [lats[1], lons[1]]
+ids = []
+while len(nodes.keys()) != 0:
+    mindist = -1
+    curmin = None
+    print(len(nodes))
+    for key in nodes:
+        dist = distance(*cur, *nodes[key])
+        if dist < mindist or mindist == -1:
+            mindist = dist
+            curmin = key
+
+    ids.append(nodes[curmin])
+
+    # if nodes[curmin] == [lats[0], lons[1]]: break
+
+    del nodes[curmin]
+
+pprint(ids)
