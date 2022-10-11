@@ -1,8 +1,8 @@
 export default defineNuxtConfig({
-  /*
-   ** Nuxt modules
-   */
+  srcDir: 'src',
+
   modules: [
+    '@nuxtjs/color-mode',
     '@nuxtjs/tailwindcss',
     '@pinia/nuxt'
   ],
@@ -35,5 +35,11 @@ export default defineNuxtConfig({
     cssPath: '~/assets/css/main.css',
     configPath: 'tailwind.config.js',
     viewer: true
+  },
+  colorMode: {
+    preference: 'system',
+    fallback: 'dark',
+    classSuffix: ''
+
   }
 });

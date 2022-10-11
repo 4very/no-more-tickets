@@ -572,6 +572,15 @@
     vite-plugin-checker "^0.5.1"
     vue-bundle-renderer "^0.4.3"
 
+"@nuxtjs/color-mode@^3.1.6":
+  version "3.1.6"
+  resolved "https://registry.yarnpkg.com/@nuxtjs/color-mode/-/color-mode-3.1.6.tgz#74057448eee3524ab85af6d844083d16d87f32a3"
+  integrity sha512-vTjlWCw+KHK9XLaiUWRPLhRGtiqkNm1RxW2GnzXaKlMONaruACtsrbJMRiwa/NB4G17uH+3pIri9z7ozADkgEw==
+  dependencies:
+    "@nuxt/kit" "^3.0.0-rc.9"
+    lodash.template "^4.5.0"
+    pathe "^0.3.5"
+
 "@nuxtjs/eslint-config-typescript@^11.0.0":
   version "11.0.0"
   resolved "https://registry.yarnpkg.com/@nuxtjs/eslint-config-typescript/-/eslint-config-typescript-11.0.0.tgz#748a0cc063a5cf93ec52dc2d5a2ed94309cacb5b"
